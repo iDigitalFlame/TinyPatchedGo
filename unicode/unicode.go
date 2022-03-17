@@ -6,12 +6,63 @@
 
 package unicode
 
-//ReplacementChar represents an invalid code points.
-const ReplacementChar = '\uFFFD'
+const (
+	// MaxRune represents the maximum valid Unicode code point.
+	MaxRune = '\U0010FFFF'
+	// MaxASCII represents the maximum ASCII value.
+	MaxASCII = '\u007F'
+	// ReplacementChar represents invalid code points.
+	ReplacementChar = '\uFFFD'
+)
+
+// Range16 represents of a range of 16-bit Unicode code points. The range runs
+// from Lo to Hi inclusive and has the specified stride.
+type Range16 struct {
+	Lo     uint16
+	Hi     uint16
+	Stride uint16
+}
+
+// Range32 represents of a range of Unicode code points and is used when one or
+// more of the values will not fit in 16 bits. The range runs from Lo to Hi
+// inclusive and has the specified stride. Lo and Hi must always be >= 1<<16.
+type Range32 struct {
+	Lo     uint32
+	Hi     uint32
+	Stride uint32
+}
+
+// RangeTable defines a set of Unicode code points by listing the ranges of
+// code points within the set. The ranges are listed in two slices
+// to save space: a slice of 16-bit ranges and a slice of 32-bit ranges.
+// The two slices must be in sorted order and non-overlapping.
+// Also, R32 should contain only values >= 0x10000 (1<<16).
+type RangeTable struct {
+	R16         []Range16
+	R32         []Range32
+	LatinOffset int
+}
 
 // SpecialCase represents language-specific case mappings such as Turkish.
 // Methods of SpecialCase customize (by overriding) the standard mappings.
-type SpecialCase bool
+type SpecialCase struct{}
+
+var (
+	// Scripts is the set of Unicode script tables.
+	Scripts = map[string]*RangeTable{}
+	// Categories is the set of Unicode category tables.
+	Categories = map[string]*RangeTable{}
+	// FoldScript maps a script name to a table of
+	// code points outside the script that are equivalent under
+	// simple case folding to code points inside the script.
+	// If there is no entry for a script name, there are no such points.
+	FoldScript = map[string]*RangeTable{}
+	// FoldCategory maps a category name to a table of
+	// code points outside the category that are equivalent under
+	// simple case folding to code points inside the category.
+	// If there is no entry for a category name, there are no such points.
+	FoldCategory = map[string]*RangeTable{}
+)
 
 // ToUpper maps the rune to upper case.
 func ToUpper(r rune) rune {
@@ -27,6 +78,26 @@ func ToLower(r rune) rune {
 		return r
 	}
 	return r + 32
+}
+
+// IsPrint reports whether the rune is defined as printable by Go. Such
+// characters include letters, marks, numbers, punctuation, symbols, and the
+// ASCII space character, from categories L, M, N, P, S and the ASCII space
+// character. This categorization is the same as IsGraphic except that the
+// only spacing character is ASCII space, U+0020.
+func IsPrint(r rune) bool {
+	switch {
+	case r < 32:
+		return false
+	case r < 127:
+		return true
+	case r < 161:
+		return false
+	case r == 173:
+		return false
+	}
+	return true
+
 }
 
 // ToTitle maps the rune to title case.
