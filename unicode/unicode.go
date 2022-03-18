@@ -150,6 +150,19 @@ func IsLetter(r rune) bool {
 	return false
 }
 
+// IsNumber reports whether the rune is a number (category N).
+func IsNumber(r rune) bool {
+	if r >= '0' && r <= '9' {
+		return true
+	}
+	switch r {
+	case 190, 189, 188, 185, 179, 178:
+		return true
+	default:
+		return false
+	}
+}
+
 // SimpleFold iterates over Unicode code points equivalent under
 // the Unicode-defined simple case folding. Among the code points
 // equivalent to rune (including rune itself), SimpleFold returns the
