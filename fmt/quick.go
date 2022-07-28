@@ -136,12 +136,23 @@ func quickFprintf(b io.Writer, s string, v ...interface{}) (int, error) {
 			break
 		}
 		switch s[i] {
-		case 's':
+		case 'q':
+			switch r := v[a].(type) {
+			case []byte:
+				n, err = io.WriteString(b, strconv.Quote(string(r)))
+			case string:
+				n, err = io.WriteString(b, strconv.Quote(r))
+			case error:
+				n, err = io.WriteString(b, strconv.Quote(r.Error()))
+			}
+		case 's', 'v':
 			switch r := v[a].(type) {
 			case []byte:
 				n, err = io.WriteString(b, string(r))
 			case string:
 				n, err = io.WriteString(b, r)
+			case error:
+				n, err = io.WriteString(b, r.Error())
 			}
 		case 'f':
 			var k float64
@@ -152,7 +163,7 @@ func quickFprintf(b io.Writer, s string, v ...interface{}) (int, error) {
 				k = r
 			}
 			n, err = io.WriteString(b, strconv.FormatFloat(k, 'f', 2, 64))
-		case 'b':
+		case 'b', 't':
 			if r, ok := v[a].(bool); ok {
 				if r {
 					n, err = io.WriteString(b, "true")
@@ -160,7 +171,7 @@ func quickFprintf(b io.Writer, s string, v ...interface{}) (int, error) {
 					n, err = io.WriteString(b, "false")
 				}
 			}
-		case 'd', 'x', 'X':
+		case 'd', 'x', 'X', 'u':
 			var k uint64
 			switch r := v[a].(type) {
 			case int:
