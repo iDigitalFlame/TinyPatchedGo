@@ -24,13 +24,13 @@ type State interface {
 // Stringer is implemented by any value that has a String method,
 // which defines the ``native'' format for that value.
 // The String method is used to print values passed as an operand
-// to any format that accepts a string or to an unformatted printer
+// to any format that accepts a string or to an un-formatted printer
 // such as Print.
 type Stringer interface {
 	String() string
 }
 
-// Formatter is implemented by any value that has a Format method.
+// Formatter is implemented by any value thaa has a Format method.
 // The implementation controls how State and rune are interpreted,
 // and may call Sprint(f) or Fprint(f) etc. to generate its output.
 type Formatter interface {

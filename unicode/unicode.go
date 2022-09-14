@@ -80,6 +80,12 @@ func ToLower(r rune) rune {
 	return r + 32
 }
 
+
+// IsUpper reports whether the rune is an upper case letter.
+func IsUpper(r rune) bool {
+	return r >= 'A' && r <= 'Z'
+}
+
 // IsPrint reports whether the rune is defined as printable by Go. Such
 // characters include letters, marks, numbers, punctuation, symbols, and the
 // ASCII space character, from categories L, M, N, P, S and the ASCII space
