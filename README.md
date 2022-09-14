@@ -3,7 +3,9 @@
 Patched Golang source to remove some symbol tables for speed and smaller binary
 sizes (~0.9MB saved!)
 
-Replaces and guts the "fmt" and "unicode" packages.
+Replaces and guts the "fmt", "runtime" and "unicode" packages.
+
+Can be used by [JetStream in ThunderStorm](https://github.com/iDigitalFlame/ThunderStorm).
 
 __For now...__
 

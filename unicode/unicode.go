@@ -82,6 +82,8 @@ func ToLower(r rune) rune {
 
 
 // IsUpper reports whether the rune is an upper case letter.
+//
+// NOTE(dij): We might be able to remove this.
 func IsUpper(r rune) bool {
 	return r >= 'A' && r <= 'Z'
 }
