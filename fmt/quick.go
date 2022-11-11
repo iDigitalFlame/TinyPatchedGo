@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+type stringer interface {
+	String() string
+}
+
 func quickPrint(nl bool, v ...interface{}) string {
 	var b strings.Builder
 	quickFprint(&b, nl, v...)
@@ -49,6 +53,15 @@ func quickFprint(b io.Writer, f bool, v ...interface{}) (int, error) {
 			}
 			s = true
 			n, err = io.WriteString(b, r)
+		case stringer:
+			if !s && i > 0 {
+				n, err = b.Write([]byte{' '})
+				if c += n; err != nil {
+					return c, err
+				}
+			}
+			s = true
+			n, err = io.WriteString(b, r.String())
 		default:
 			if s = false; i > 0 {
 				n, err = b.Write([]byte{' '})
@@ -103,7 +116,7 @@ func quickFprint(b io.Writer, f bool, v ...interface{}) (int, error) {
 }
 func quickFprintf(b io.Writer, s string, v ...interface{}) (int, error) {
 	if len(v) == 0 {
-		return 0, nil
+		return io.WriteString(b, s)
 	}
 	var (
 		n, c, x, a int
@@ -144,6 +157,8 @@ func quickFprintf(b io.Writer, s string, v ...interface{}) (int, error) {
 				n, err = io.WriteString(b, strconv.Quote(r))
 			case error:
 				n, err = io.WriteString(b, strconv.Quote(r.Error()))
+			case stringer:
+				n, err = io.WriteString(b, strconv.Quote(r.String()))
 			}
 		case 's', 'v':
 			switch r := v[a].(type) {
@@ -153,6 +168,8 @@ func quickFprintf(b io.Writer, s string, v ...interface{}) (int, error) {
 				n, err = io.WriteString(b, r)
 			case error:
 				n, err = io.WriteString(b, r.Error())
+			case stringer:
+				n, err = io.WriteString(b, r.String())
 			case int:
 				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
 			case int8:
