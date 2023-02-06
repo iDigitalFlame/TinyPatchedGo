@@ -10,6 +10,23 @@ type stringer interface {
 	String() string
 }
 
+func uitoa(v uint64) string {
+	if v == 0 {
+		return "0"
+	}
+	var (
+		i = 0x13
+		b [20]byte
+	)
+	for v >= 0xA {
+		n := v / 0xA
+		b[i] = byte(0x30 + v - n*0xA)
+		i--
+		v = n
+	}
+	b[i] = byte(0x30 + v)
+	return string(b[i:])
+}
 func quickPrint(nl bool, v ...interface{}) string {
 	var b strings.Builder
 	quickFprint(&b, nl, v...)
@@ -81,27 +98,27 @@ func quickFprint(b io.Writer, f bool, v ...interface{}) (int, error) {
 			case float64:
 				n, err = io.WriteString(b, strconv.FormatFloat(r, 'f', 2, 64))
 			case int:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case int8:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case int16:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case int32:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case int64:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case uint:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case uint8:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case uint16:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case uint32:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case uint64:
-				n, err = io.WriteString(b, strconv.FormatUint(r, 10))
+				n, err = io.WriteString(b, uitoa(r))
 			case uintptr:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			}
 		}
 		if c += n; err != nil {
@@ -171,27 +188,27 @@ func quickFprintf(b io.Writer, s string, v ...interface{}) (int, error) {
 			case stringer:
 				n, err = io.WriteString(b, r.String())
 			case int:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case int8:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case int16:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case int32:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case int64:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case uint:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case uint8:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case uint16:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case uint32:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case uint64:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			case uintptr:
-				n, err = io.WriteString(b, strconv.FormatUint(uint64(r), 10))
+				n, err = io.WriteString(b, uitoa(uint64(r)))
 			}
 		case 'f', 'e', 'E', 'g', 'G':
 			var k float64
@@ -239,7 +256,7 @@ func quickFprintf(b io.Writer, s string, v ...interface{}) (int, error) {
 			if s[i] == 'x' || s[i] == 'X' {
 				n, err = io.WriteString(b, strconv.FormatUint(k, 16))
 			} else {
-				n, err = io.WriteString(b, strconv.FormatUint(k, 10))
+				n, err = io.WriteString(b, uitoa(k))
 			}
 		default:
 			n, err = io.WriteString(b, s[x:i])
