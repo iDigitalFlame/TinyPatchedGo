@@ -22,7 +22,7 @@ type State interface {
 }
 
 // Stringer is implemented by any value that has a String method,
-// which defines the ``native'' format for that value.
+// which defines the “native” format for that value.
 // The String method is used to print values passed as an operand
 // to any format that accepts a string or to an un-formatted printer
 // such as Print.
@@ -57,19 +57,6 @@ func Sprintln(v ...interface{}) string {
 	return quickPrint(true, v...)
 }
 
-// Append formats using the default formats for its operands, appends the result to
-// the byte slice, and returns the updated slice.
-func Append(b []byte, v ...any) []byte {
-	return append(b, []byte(quickPrint(false, v...))...)
-}
-
-// Appendln formats using the default formats for its operands, appends the result
-// to the byte slice, and returns the updated slice. Spaces are always added
-// between operands and a newline is appended.
-func Appendln(b []byte, v ...any) []byte {
-	return append(b, []byte(quickPrint(true, v...))...)
-}
-
 // Print formats using the default formats for its operands and writes to standard output.
 // Spaces are added between operands when neither is a string.
 // It returns the number of bytes written and any write error encountered.
@@ -96,15 +83,22 @@ func Errorf(s string, v ...interface{}) error {
 	return errors.New(quickPrintf(s, v...))
 }
 
+// Append formats using the default formats for its operands, appends the result to
+// the byte slice, and returns the updated slice.
+func Append(b []byte, v ...interface{}) []byte {
+	return append(b, []byte(quickPrint(false, v...))...)
+}
+
+// Appendln formats using the default formats for its operands, appends the result
+// to the byte slice, and returns the updated slice. Spaces are always added
+// between operands and a newline is appended.
+func Appendln(b []byte, v ...interface{}) []byte {
+	return append(b, []byte(quickPrint(true, v...))...)
+}
+
 // Sprintf formats according to a format specifier and returns the resulting string.
 func Sprintf(s string, v ...interface{}) string {
 	return quickPrintf(s, v...)
-}
-
-// Appendf formats according to a format specifier, appends the result to the byte
-// slice, and returns the updated slice.
-func Appendf(b []byte, s string, v ...any) []byte {
-	return append(b, []byte(quickPrintf(s, v...))...)
 }
 
 // Printf formats according to a format specifier and writes to standard output.
@@ -125,6 +119,12 @@ func Fprint(w io.Writer, v ...interface{}) (int, error) {
 // It returns the number of bytes written and any write error encountered.
 func Fprintln(w io.Writer, v ...interface{}) (int, error) {
 	return quickFprint(w, true, v...)
+}
+
+// Appendf formats according to a format specifier, appends the result to the byte
+// slice, and returns the updated slice.
+func Appendf(b []byte, s string, v ...interface{}) []byte {
+	return append(b, []byte(quickPrintf(s, v...))...)
 }
 
 // Fprintf formats according to a format specifier and writes to w.
